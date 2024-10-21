@@ -1,44 +1,31 @@
 # O que fiz nessa aula?
 
-1. Implementei o método bot(prompt)
+1. Importei o arquivo musimart.txt
+2. Criei o código helpers.py, dentro dele coloquei:
 
 ```python
-def bot(prompt):
-    maximo_tentativas = 1
-    repeticao = 0
-    while True:
-        try:
-            prompt_do_sistema = f"""
-            Você é um chatbot de atendimento a clientes de um e-commerce. 
-            Você não deve responder perguntas que não sejam dados do ecommerce informado!
-            """
+import base64
+import cv2
+import numpy as np
 
-            configuracao_modelo = {
-                "temperature" : 0.1,
-                "top_p" : 1.0,
-                "top_k" : 2,
-                "max_output_tokens" : 8192
-            }
+def carrega(nome_do_arquivo):
+    try:
+        with open(nome_do_arquivo, "r") as arquivo:
+            dados = arquivo.read()
+            return dados
+    except IOError as e:
+        print(f"Erro no carregamento de arquivo: {e}")
 
-            llm = genai.GenerativeModel(
-                model_name=MODELO_ESCOLHIDO,
-                system_instruction=prompt_do_sistema,
-                generation_config=configuracao_modelo
-            )
-
-            resposta = llm.generate_content(prompt)
- 
-            return resposta.text
-        except Exception as erro:
-            repeticao += 1
-            if repeticao >= maximo_tentativas:
-                return "Erro no Gemini: %s" % erro
-            print('Erro de comunicação com Gemini:', erro)
-            sleep(1)
+def salva(nome_do_arquivo, conteudo):
+    try:
+        with open(nome_do_arquivo, "w", encoding="utf-8") as arquivo:
+            arquivo.write(conteudo)
+    except IOError as e:
+        print(f"Erro ao salvar arquivo: {e}")
             
 ```
 
-2. Conclui o método chat()
+3. Alterei o arquivo app.py e adicionei uma variável global chamada contexto
 
 ```python
 @app.route("/chat", methods=["POST"])

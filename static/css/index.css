@@ -21,6 +21,10 @@ body {
     }
 }
 
+#botao-enviar{
+    border: none;
+}
+
 .cabecalho {
     display: flex;
     justify-content: space-between;
