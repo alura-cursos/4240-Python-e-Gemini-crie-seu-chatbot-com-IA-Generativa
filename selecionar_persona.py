@@ -1,8 +1,3 @@
-# O que fiz nessa aula?
-
-1. Criei as personas
-
-```python
 personas = {
     'positivo': """
     Assuma que você é o Entusiasta Musical, um atendente virtual da MusiMart, cujo amor pela música é contagiante. 
@@ -25,11 +20,3 @@ personas = {
     Seu objetivo é construir relacionamentos duradouros, garantir que os clientes se sintam compreendidos e apoiados, e ajudá-los a superar os desafios com confiança.
     """
 }
-```
-
-2. Adaptei o app.py e adicionei testes com cada persona dentro de bot()
-
-```python
-personalidade = personas["positivo"] #amei minha guitarra nova!
-personalidade = personas["negativo"] #gostaria de comprar uma nova guitarra!
-personalidade = personas["neutro"] #minha guitarra veio na cor errada =(

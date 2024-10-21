@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import os
 from time import sleep
 from helpers import carrega, salva
+from selecionar_persona import personas
 
 load_dotenv()
 
@@ -19,6 +20,7 @@ contexto = carrega("dados/musimart.txt")
 def bot(prompt):
     maximo_tentativas = 1
     repeticao = 0
+    personalidade = personas["negativo"]
     while True:
         try:
             prompt_do_sistema = f"""
@@ -28,6 +30,9 @@ def bot(prompt):
 
             # CONTEXTO
             {contexto}
+
+            # PERSONALIDADE
+            {personalidade}
             """
 
             configuracao_modelo = {
