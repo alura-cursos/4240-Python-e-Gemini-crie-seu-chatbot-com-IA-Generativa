@@ -1,0 +1,1 @@
+# 4240-Python-e-Gemini-crie-seu-chatbot-com-IA-Generativa
