@@ -1,45 +1,34 @@
 # O que fiz nessa aula?
 
-1. Ajustei o arquivo index.js para que seja capaz de viabilizar o funcionamento de envio de imagens pelo chat
-```js
-let imagemSelecionada;
-let botaoAnexo = document.querySelector('#mais_arquivo');
-let miniaturaImagem;
-
-async function pegarImagem() {
-    let fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'image/*';
-
-    fileInput.onchange = async e => {
-        if (miniaturaImagem) {
-            miniaturaImagem.remove(); 
-        }
-
-        imagemSelecionada = e.target.files[0];
-
-        miniaturaImagem = document.createElement('img');
-        miniaturaImagem.src = URL.createObjectURL(imagemSelecionada);
-        miniaturaImagem.style.maxWidth = '3rem'; 
-        miniaturaImagem.style.maxHeight = '3rem';
-        miniaturaImagem.style.margin = '0.5rem'; 
-
-        document.querySelector('.entrada__container').insertBefore(miniaturaImagem, input);
-
-        let formData = new FormData();
-        formData.append('imagem', imagemSelecionada);
-
-        const response = await fetch('http://127.0.0.1:5000/upload_imagem', {
-            method: 'POST',
-            body: formData
-        });
-
-        const resposta = await response.text();
-        console.log(resposta);
-        console.log(imagemSelecionada);
-    }
-    fileInput.click();
-}
-
+1. Importei a biblioteca UUID para ler novos arquivos
+```python
+import uuid 
 ```
 
+2. Especifiquei uma variável para caminho de dados e para lietura de diretório (constante)
+
+```python
+caminho_imagem_enviada = None
+UPLOAD_FOLDER = 'imagens_temporarias' 
+```
+
+3. Adicionei uma variável global para acessar o camnho da imagem no bot principal
+
+```python
+global caminho_imagem_enviada
+```
+
+4. Criei a rota que faz upload da imagem
+```python
+@app.route('/upload_imagem', methods=['POST'])
+def upload_imagem():
+    if 'imagem' in request.files:
+        imagem_enviada = request.files['imagem']
+        nome_arquivo = str(uuid.uuid4()) + os.path.splitext(imagem_enviada.filename)[1]
+        caminho_arquivo = os.path.join(UPLOAD_FOLDER, nome_arquivo)
+        imagem_enviada.save(caminho_arquivo)
+        caminho_imagem_enviada = caminho_arquivo
+
+        return 'Imagem recebida com sucesso!', 200
+    return 'Nenhum arquivo foi enviado', 400
+```
