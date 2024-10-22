@@ -78,7 +78,6 @@ def bot(prompt):
             if len(chatbot.history) > 10:
                 chatbot.history = remover_mensagem_mais_antiga(chatbot.history)
 
-            print(chatbot.history)
             return resposta.text
         except Exception as erro:
             repeticao += 1
@@ -89,6 +88,7 @@ def bot(prompt):
 
 @app.route('/upload_imagem', methods=['POST'])
 def upload_imagem():
+    global caminho_imagem_enviada
     if 'imagem' in request.files:
         imagem_enviada = request.files['imagem']
         nome_arquivo = str(uuid.uuid4()) + os.path.splitext(imagem_enviada.filename)[1]
