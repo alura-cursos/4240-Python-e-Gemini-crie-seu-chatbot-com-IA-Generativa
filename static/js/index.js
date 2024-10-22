@@ -46,6 +46,10 @@ async function enviarMensagem() {
     let mensagem = input.value;
     input.value = "";
 
+    if (miniaturaImagem) {
+        miniaturaImagem.remove(); 
+    }
+
     let novaBolha = criaBolhaUsuario();
     novaBolha.innerHTML = mensagem;
     chat.appendChild(novaBolha);
@@ -53,7 +57,16 @@ async function enviarMensagem() {
     let novaBolhaBot = criaBolhaBot();
     chat.appendChild(novaBolhaBot);
     vaiParaFinalDoChat();
-    novaBolhaBot.innerHTML = "Analisando ..."
+
+    novaBolhaBot.innerHTML = "Analisando";
+    
+    let estados = ["Analisando .", "Analisando ..", "Analisando ...", "Analisando ."];
+    let indiceEstado = 0;
+
+    let intervaloAnimacao = setInterval(() => {
+        novaBolhaBot.innerHTML = estados[indiceEstado];
+        indiceEstado = (indiceEstado + 1) % estados.length; // Loop nos estados
+    }, 500);
     
     // Envia requisição com a mensagem para a API do ChatBot
     const resposta = await fetch("http://127.0.0.1:5000/chat", {
@@ -65,6 +78,8 @@ async function enviarMensagem() {
     });
     const textoDaResposta = await resposta.text();
     console.log(textoDaResposta);
+
+    clearInterval(intervaloAnimacao);
     novaBolhaBot.innerHTML = textoDaResposta.replace(/\n/g, '<br>');
     vaiParaFinalDoChat();
 }
@@ -94,3 +109,4 @@ input.addEventListener("keyup", function(event) {
 });
 
 botaoAnexo.addEventListener('click', pegarImagem);
+
