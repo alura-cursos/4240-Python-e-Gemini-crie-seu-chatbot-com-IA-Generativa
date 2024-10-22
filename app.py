@@ -17,39 +17,56 @@ app.secret_key = 'alura'
 
 contexto = carrega("dados/musimart.txt")
 
+def criar_chatbot():
+    personalidade = "neutro"
+    configuracao_modelo = {
+        "temperature" : 0.1,
+        "top_p" : 1.0,
+        "top_k" : 2,
+        "max_output_tokens" : 8192
+    }
+
+    prompt_do_sistema = f"""
+    # PERSONA
+    Você é um chatbot de atendimento a clientes de um e-commerce. 
+    Você não deve responder perguntas que não sejam dados do ecommerce informado!
+
+    # CONTEXTO
+    {contexto}
+
+    # PERSONALIDADE
+    {personalidade}
+
+    # Histórico
+    Acesse sempre o histórico de mensagens para recuperar informações entregues antes pelo usuário.
+    """
+
+    llm = genai.GenerativeModel(
+        model_name=MODELO_ESCOLHIDO,
+        system_instruction=prompt_do_sistema,
+        generation_config=configuracao_modelo
+    )
+
+    chatbot = llm.start_chat(history=[])
+    
+    return chatbot
+
+chatbot = criar_chatbot()
+
 def bot(prompt):
     maximo_tentativas = 1
     repeticao = 0
-    personalidade = personas[selecionar_persona(prompt)]
     while True:
         try:
-            prompt_do_sistema = f"""
-            # PERSONA
-            Você é um chatbot de atendimento a clientes de um e-commerce. 
-            Você não deve responder perguntas que não sejam dados do ecommerce informado!
-
-            # CONTEXTO
-            {contexto}
-
-            # PERSONALIDADE
+            personalidade = personas[selecionar_persona(prompt)]
+            mensagem = f""""
+            Considere esta personalidade para respondar a mensagem:
             {personalidade}
+
+            Responda a seguinte mensagem. Lembre-se de acessar o histórico.
+            {prompt}
             """
-
-            configuracao_modelo = {
-                "temperature" : 0.1,
-                "top_p" : 1.0,
-                "top_k" : 2,
-                "max_output_tokens" : 8192
-            }
-
-            llm = genai.GenerativeModel(
-                model_name=MODELO_ESCOLHIDO,
-                system_instruction=prompt_do_sistema,
-                generation_config=configuracao_modelo
-            )
-
-            resposta = llm.generate_content(prompt)
- 
+            resposta = chatbot.send_message(mensagem)
             return resposta.text
         except Exception as erro:
             repeticao += 1
