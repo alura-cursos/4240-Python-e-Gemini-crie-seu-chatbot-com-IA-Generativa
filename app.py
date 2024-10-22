@@ -7,6 +7,7 @@ from helpers import carrega, salva
 from selecionar_persona import selecionar_persona, personas
 from gerenciar_historico import remover_mensagem_mais_antiga
 import uuid 
+from gerenciar_visao import gerar_imagem_gemini
 
 load_dotenv()
 
@@ -53,7 +54,7 @@ def criar_chatbot():
     )
 
     chatbot = llm.start_chat(history=[])
-    
+
     return chatbot
 
 chatbot = criar_chatbot()
@@ -72,8 +73,14 @@ def bot(prompt):
             Responda a seguinte mensagem. Lembre-se de acessar o histórico.
             {prompt}
             """
-
-            resposta = chatbot.send_message(mensagem)
+            if caminho_imagem_enviada:
+                arquivo_imagem = gerar_imagem_gemini(caminho_imagem_enviada)
+                resposta = chatbot.send_message([arquivo_imagem, mensagem])
+                caminho_imagem_enviada = None
+                
+            else:
+                resposta = chatbot.send_message(mensagem)
+                
 
             if len(chatbot.history) > 10:
                 chatbot.history = remover_mensagem_mais_antiga(chatbot.history)
