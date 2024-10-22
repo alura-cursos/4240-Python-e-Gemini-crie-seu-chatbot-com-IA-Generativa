@@ -74,8 +74,11 @@ def bot(prompt):
             {prompt}
             """
             if caminho_imagem_enviada:
+                mensagem += "\n. Fale das características da imagem na construção da resposta"
                 arquivo_imagem = gerar_imagem_gemini(caminho_imagem_enviada)
                 resposta = chatbot.send_message([arquivo_imagem, mensagem])
+                os.remove(caminho_imagem_enviada)
+                genai.delete_file(arquivo_imagem.name)
                 caminho_imagem_enviada = None
                 
             else:
