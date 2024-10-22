@@ -1,81 +1,45 @@
 # O que fiz nessa aula?
 
-1. Ajustei o método para gerenciar o histórico
-```python
-def bot(prompt):
-    maximo_tentativas = 1
-    repeticao = 0
-    while True:
-        try:
-            personalidade = personas[selecionar_persona(prompt)]
-            mensagem = f""""
-            Considere esta personalidade para respondar a mensagem:
-            {personalidade}
+1. Ajustei o arquivo index.js para que seja capaz de viabilizar o funcionamento de envio de imagens pelo chat
+```js
+let imagemSelecionada;
+let botaoAnexo = document.querySelector('#mais_arquivo');
+let miniaturaImagem;
 
-            Responda a seguinte mensagem. Lembre-se de acessar o histórico.
-            {prompt}
-            """
+async function pegarImagem() {
+    let fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
 
-            resposta = chatbot.send_message(mensagem)
+    fileInput.onchange = async e => {
+        if (miniaturaImagem) {
+            miniaturaImagem.remove(); 
+        }
 
-            if len(chatbot.history) > 10:
-                chatbot.history = remover_mensagem_mais_antiga(chatbot.history)
+        imagemSelecionada = e.target.files[0];
 
-            print(chatbot.history)
-            return resposta.text
-        except Exception as erro:
-            repeticao += 1
-            if repeticao >= maximo_tentativas:
-                return "Erro no Gemini: %s" % erro
-            print('Erro de comunicação com Gemini:', erro)
-            sleep(1)
-```
+        miniaturaImagem = document.createElement('img');
+        miniaturaImagem.src = URL.createObjectURL(imagemSelecionada);
+        miniaturaImagem.style.maxWidth = '3rem'; 
+        miniaturaImagem.style.maxHeight = '3rem';
+        miniaturaImagem.style.margin = '0.5rem'; 
 
-2. Talvez, aqui vire um PARA SABER MAIS
+        document.querySelector('.entrada__container').insertBefore(miniaturaImagem, input);
 
-```python
-def sumarizar_historico(historico):
-    # Gerar um texto com as mensagens do histórico formatadas para o prompt
-    texto_historico = ""
-    for item in historico:
-        if item.role == "user":
-            texto_historico += f"Usuário: {item.parts[0].text}\n"
-        elif item.role == "model":
-            texto_historico += f"Bot: {item.parts[0].text}\n"
+        let formData = new FormData();
+        formData.append('imagem', imagemSelecionada);
 
-    # Prompt para o modelo gerar o resumo
-    prompt_do_sistema = f"""
-    Você é um assistente que deve sumarizar o histórico de conversa entre um usuário e um chatbot de e-commerce.
+        const response = await fetch('http://127.0.0.1:5000/upload_imagem', {
+            method: 'POST',
+            body: formData
+        });
 
-    1. Resuma de forma clara e objetiva as principais interações entre o usuário e o bot.
-    2. Destaque as mensagens mais importantes e, se possível, informe se o usuário está satisfeito, neutro ou insatisfeito com o atendimento.
-    3. O resumo deve ser conciso, mas não deve deixar de mencionar informações relevantes sobre os produtos ou dúvidas do usuário.
-    
-    Aqui está o histórico de mensagens para você analisar:
-    
-    {texto_historico}
-
-    Formato de Saída: Um parágrafo conciso e direto com as informações mais relevantes.
-    """
-
-    configuracao_modelo = {
-        "temperature": 0.1,
-        "top_p": 1.0,
-        "top_k": 2,
-        "max_output_tokens": 8192
+        const resposta = await response.text();
+        console.log(resposta);
+        console.log(imagemSelecionada);
     }
+    fileInput.click();
+}
 
-    # Configurar a LLM com o prompt de sumarização
-    llm = genai.GenerativeModel(
-        model_name=MODELO_ESCOLHIDO,
-        system_instruction=prompt_do_sistema,
-        generation_config=configuracao_modelo
-    )
-
-    # Gerar o resumo com base no histórico fornecido
-    resposta = llm.generate_content(texto_historico)
-
-    return resposta.text
 ```
-
 
