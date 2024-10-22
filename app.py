@@ -58,16 +58,7 @@ def bot(prompt):
     repeticao = 0
     while True:
         try:
-            personalidade = personas[selecionar_persona(prompt)]
-            mensagem = f""""
-            Considere esta personalidade para respondar a mensagem:
-            {personalidade}
-
-            Responda a seguinte mensagem. Lembre-se de acessar o histórico.
-            {prompt}
-            """
-            resposta = chatbot.send_message(mensagem)
-            return resposta.text
+            
         except Exception as erro:
             repeticao += 1
             if repeticao >= maximo_tentativas:
