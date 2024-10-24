@@ -7,6 +7,7 @@ from helper import carrega, salva
 from selecionar_persona import personas, selecionar_persona
 from gerenciar_historico import remover_mensagens_mais_antigas
 import uuid
+from gerenciar_imagem import gerar_imagem_gemini
 
 load_dotenv()
 
@@ -63,6 +64,7 @@ chatbot = criar_chatbot()
 def bot(prompt):
     maximo_tentativas = 1
     repeticao = 0
+    global caminho_imagem_enviada
 
     while True:
         try:
@@ -75,7 +77,13 @@ def bot(prompt):
             {prompt}
             """
 
-            resposta = chatbot.send_message(mensagem_usuario)
+            if caminho_imagem_enviada:
+                mensagem_usuario += "\n Utilize as caracteristicas da imagem em sua resposta"
+                arquivo_imagem = gerar_imagem_gemini(caminho_imagem_enviada)
+                resposta = chatbot.send_message([arquivo_imagem, mensagem_usuario])
+                caminho_imagem_enviada = None
+            else:
+                resposta = chatbot.send_message(mensagem_usuario)
 
             if len(chatbot.history) > 10:
                 chatbot.history = remover_mensagens_mais_antigas(chatbot.history)
@@ -97,6 +105,7 @@ def upload_imagem():
         nome_arquivo = str(uuid.uuid4()) + os.path.splitext(imagem_enviada.filename)[1]
         caminho_arquivo = os.path.join(UPLOAD_FOLDER, nome_arquivo)
         imagem_enviada.save(caminho_arquivo)
+        caminho_imagem_enviada = caminho_arquivo
         return "Imagem enviada com sucesso", 200
     return "Nenhum arquivo enviado", 400
 
