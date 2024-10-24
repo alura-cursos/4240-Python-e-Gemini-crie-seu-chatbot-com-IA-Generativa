@@ -5,6 +5,7 @@ import os
 from time import sleep
 from helper import carrega, salva
 from selecionar_persona import personas, selecionar_persona
+from gerenciar_historico import remover_mensagens_mais_antigas
 
 load_dotenv()
 
@@ -71,7 +72,10 @@ def bot(prompt):
             """
 
             resposta = chatbot.send_message(mensagem_usuario)
-            
+
+            if len(chatbot.history) > 10:
+                chatbot.history = remover_mensagens_mais_antigas(chatbot.history)
+
             return resposta.text
         except Exception as erro:
             repeticao += 1
