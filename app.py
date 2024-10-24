@@ -37,6 +37,8 @@ def criar_chatbot():
     Você é um chatbot de atendimento a clientes de um e-commerce. 
     Você não deve responder perguntas que não sejam dados do ecommerce informado!
 
+    Utilize apenas os dados fornecidos no contexto, não utilize dados externos!
+
     # CONTEXTO
     {contexto}
 
@@ -78,7 +80,6 @@ def bot(prompt):
                 arquivo_imagem = gerar_imagem_gemini(caminho_imagem_enviada)
                 resposta = chatbot.send_message([arquivo_imagem, mensagem])
                 os.remove(caminho_imagem_enviada)
-                genai.delete_file(arquivo_imagem.name)
                 caminho_imagem_enviada = None
                 
             else:
@@ -93,6 +94,10 @@ def bot(prompt):
             repeticao += 1
             if repeticao >= maximo_tentativas:
                 return "Erro no Gemini: %s" % erro
+            
+            if caminho_imagem_enviada:
+                os.remove(caminho_imagem_enviada)
+                caminho_imagem_enviada = None
             print('Erro de comunicação com Gemini:', erro)
             sleep(1)
 
