@@ -33,6 +33,9 @@ def criar_chatbot():
 
     # PERSONALIDADE
     {personalidade}
+
+    # Histórico
+    Acesse sempre o históricio de mensagens, e recupere informações ditas anteriormente.
     """
 
     configuracao_modelo = {
@@ -59,12 +62,17 @@ def bot(prompt):
     while True:
         try:
             personalidade = personas[selecionar_persona(prompt)]
+            mensagem_usuario = f"""
+            Considere esta personalidade para responder a mensagem:
+            {personalidade}
 
-            
+            Responda a seguinte mensagem, sempre lembrando do históricio:
+            {prompt}
+            """
 
+            resposta = chatbot.send_message(mensagem_usuario)
             
-            
-            return 
+            return resposta.text
         except Exception as erro:
             repeticao += 1
             if repeticao >= maximo_tentativas:
