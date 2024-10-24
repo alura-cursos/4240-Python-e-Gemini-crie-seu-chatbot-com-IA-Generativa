@@ -12,6 +12,11 @@ genai.configure(api_key=CHAVE_API_GOOGLE)
 app = Flask(__name__)
 app.secret_key = 'alura'
 
+@app.route("/chat", methods=["POST"])
+def chat():
+    prompt = request.json["msg"]
+    resposta = bot(prompt)
+
 @app.route("/")
 def home():
     return render_template("index.html")
