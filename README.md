@@ -51,5 +51,3 @@ pip install -r requirements.txt
 ```python
 GEMINI_API_KEY = "SUA_CHAVE_AQUI"
 ```
-
-
