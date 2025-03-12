@@ -30,7 +30,7 @@ Após baixar o projeto, você pode abrir com Visual Studio Code. Em seguida, é 
 
 ```bash
 python -m venv venv-gemini-2
-source venv-gemini-2/Scripts/activate
+venv-gemini-2\Scripts\activate
 ```
 
 ### venv no Mac/Linux:
